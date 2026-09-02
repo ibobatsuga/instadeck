@@ -583,6 +583,14 @@
     .cta-panel h2 { max-width: 760px; margin-inline: auto; }
     .cta-panel p { max-width: 560px; margin: 20px auto 31px; color: var(--muted); line-height: 1.75; }
 
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
     footer { padding: 0 0 28px; }
     .footer-inner {
       display: flex;
@@ -641,7 +649,8 @@
       .step { grid-template-columns: 1fr; gap: 15px; padding: 24px; }
       .cta-section { padding: 36px 0 28px; }
       .cta-panel { padding: 48px 22px; border-radius: 26px; }
-      .cta-panel .button { width: 100%; }
+      .cta-actions { display: grid; }
+      .cta-actions .button { width: 100%; }
       .footer-inner { flex-direction: column; align-items: flex-start; }
     }
 
@@ -984,7 +993,7 @@
         <span class="pro-badge">PRO</span>
       </div>
       <a class="button button-small" href="https://gemini.google.com/share/c0ca6ce72be3" target="_blank" rel="noopener noreferrer">
-        Lihat InstaDeck
+        Login InstaDeck
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
@@ -1122,10 +1131,16 @@
           <p class="section-kicker">Waktu Anda untuk hal yang lebih penting</p>
           <h2>Berhenti membuat setiap slide dari nol.</h2>
           <p>Biarkan InstaDeck mengubah ide dan artikel menjadi konten sosial yang utuh, konsisten, dan siap digunakan.</p>
-          <a class="button button-gradient" href="https://gemini.google.com/share/c0ca6ce72be3" target="_blank" rel="noopener noreferrer">
-            Lihat InstaDeck sekarang
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <div class="cta-actions">
+            <a class="button button-gradient" href="https://lynk.id/ibobatsuga/0691x567k7yd/checkout" target="_blank" rel="noopener noreferrer">
+              Beli InstaDeck
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 8V6a5 5 0 0 1 10 0v2M5 8h14l-1 13H6L5 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="button button-secondary" href="https://gemini.google.com/share/c0ca6ce72be3" target="_blank" rel="noopener noreferrer">
+              Lihat InstaDeck sekarang
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
         </div>
       </div>
     </section>
