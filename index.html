@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070913" />
+  <meta name="description" content="Masukkan kata kunci atau URL artikel, lalu biarkan InstaDeck membuat carousel, Story, visual, dan caption secara otomatis—siap dipublikasikan." />
+  <meta property="og:title" content="InstaDeck — Konten Otomatis, Siap Posting" />
+  <meta property="og:description" content="Dari kata kunci atau URL menjadi carousel dan Story lengkap. Cepat, otomatis, nyaris tanpa effort." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="assets/instadeck-logo.png" />
+  <title>InstaDeck — Buat Carousel & Story Otomatis</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      color-scheme: dark;
+      --bg: #070913;
+      --bg-soft: #0c1020;
+      --surface: rgba(255, 255, 255, 0.065);
+      --surface-strong: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f7f8ff;
+      --muted: #a9afc4;
+      --blue: #7aa8ff;
+      --violet: #b38cff;
+      --cyan: #69e6f2;
+      --pink: #ff86b7;
+      --green: #76e0b1;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --container: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 6%, rgba(75, 116, 255, 0.18), transparent 29rem),
+        radial-gradient(circle at 86% 19%, rgba(169, 92, 246, 0.18), transparent 30rem),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+    }
+
+    a { color: inherit; }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--container));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: relative;
+      z-index: 20;
+      padding: 24px 0;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .button {
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 22px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      color: #080a14;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .28);
+      transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 48px rgba(71, 101, 214, .34);
+      background: #f8faff;
+    }
+
+    .button:focus-visible {
+      outline: 3px solid rgba(105, 230, 242, .7);
+      outline-offset: 4px;
+    }
+
+    .button svg { width: 18px; height: 18px; }
+
+    .button-small { min-height: 44px; padding: 0 18px; }
+
+    .button-gradient {
+      position: relative;
+      isolation: isolate;
+      min-height: 58px;
+      padding: 0 26px;
+      border: 0;
+      background: linear-gradient(110deg, #d9e8ff 0%, #b6c9ff 29%, #d7bdff 65%, #a7f0f3 100%);
+      box-shadow: 0 14px 45px rgba(108, 122, 255, .33), inset 0 1px rgba(255,255,255,.8);
+    }
+
+    .button-gradient::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(100deg, var(--cyan), var(--blue), var(--violet), var(--pink));
+      filter: blur(14px);
+      opacity: .34;
+      transition: opacity .25s ease;
+    }
+
+    .button-gradient:hover::before { opacity: .62; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: calc(100svh - 92px);
+      display: grid;
+      align-items: center;
+      padding: 56px 0 76px;
+    }
+
+    .hero-orb {
+      position: absolute;
+      width: 390px;
+      height: 390px;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(30px);
+      opacity: .18;
+      background: conic-gradient(var(--blue), var(--violet), var(--cyan), var(--blue));
+      animation: drift 11s ease-in-out infinite;
+    }
+
+    .hero-orb.one { top: 6%; right: -170px; }
+    .hero-orb.two { bottom: -180px; left: -240px; animation-delay: -5s; }
+
+    @keyframes drift {
+      50% { transform: translate3d(0, 22px, 0) scale(1.07) rotate(8deg); }
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(440px, .88fr);
+      align-items: center;
+      gap: 72px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 22px;
+      padding: 8px 13px;
+      border: 1px solid rgba(155, 179, 255, .19);
+      border-radius: 999px;
+      color: #dce5ff;
+      background: rgba(127, 149, 255, .08);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 13px var(--cyan);
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(3.15rem, 6.5vw, 6.45rem);
+      line-height: .94;
+      letter-spacing: -.072em;
+      text-wrap: balance;
+    }
+
+    .gradient-text {
+      display: block;
+      padding-right: .08em;
+      color: transparent;
+      background: linear-gradient(105deg, #fbfcff 8%, #9bc0ff 36%, #c79eff 66%, #8ee8ed 92%);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .hero-copy {
+      max-width: 610px;
+      margin: 27px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.5vw, 1.14rem);
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .microcopy {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #8d95ad;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .microcopy svg { width: 16px; height: 16px; color: var(--green); }
+
+    .experience-card {
+      position: relative;
+      padding: 1px;
+      border-radius: calc(var(--radius-xl) + 1px);
+      background: linear-gradient(145deg, rgba(149,183,255,.7), rgba(255,255,255,.1) 38%, rgba(192,125,255,.5) 72%, rgba(103,228,240,.4));
+      box-shadow: var(--shadow);
+      transform: perspective(1000px) rotateY(-3deg) rotateX(1deg);
+    }
+
+    .experience-card::before {
+      content: "";
+      position: absolute;
+      inset: 8% -9% -8% 10%;
+      z-index: -1;
+      border-radius: 50%;
+      background: linear-gradient(120deg, rgba(85,138,255,.4), rgba(174,100,255,.3), rgba(83,229,235,.2));
+      filter: blur(55px);
+      opacity: .65;
+    }
+
+    .window {
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(150deg, rgba(18,22,41,.96), rgba(8,11,24,.97));
+    }
+
+    .window-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .window-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #dce3f7;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .window-dots { display: flex; gap: 5px; }
+    .window-dots i { width: 5px; height: 5px; border-radius: 50%; background: #555c72; }
+
+    .conversation {
+      min-height: 448px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 25px;
+    }
+
+    .prompt {
+      align-self: flex-end;
+      max-width: 82%;
+      padding: 15px 18px;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 18px 18px 5px 18px;
+      background: rgba(255,255,255,.075);
+      color: #e7e9f3;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .answer {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 13px;
+    }
+
+    .answer-lines { display: grid; gap: 12px; }
+    .answer-lines span {
+      display: block;
+      height: 8px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, rgba(207,219,255,.28), rgba(207,219,255,.08));
+    }
+    .answer-lines span:nth-child(2) { width: 91%; }
+    .answer-lines span:nth-child(3) { width: 78%; }
+    .answer-lines span:nth-child(4) { width: 58%; }
+
+    .insight-panel {
+      position: relative;
+      overflow: hidden;
+      margin-left: 37px;
+      padding: 20px;
+      border: 1px solid rgba(142,184,255,.17);
+      border-radius: 19px;
+      background: linear-gradient(135deg, rgba(101,142,255,.11), rgba(190,118,255,.09));
+    }
+
+    .insight-panel::after {
+      content: "";
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      top: -90px;
+      right: -40px;
+      border-radius: 50%;
+      background: var(--violet);
+      filter: blur(45px);
+      opacity: .22;
+    }
+
+    .insight-label {
+      margin-bottom: 8px;
+      color: #a9beff;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .insight-title {
+      margin: 0;
+      color: #eef2ff;
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: -.025em;
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 37px;
+    }
+    .typing i {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #93a4d1;
+      animation: type 1.2s ease-in-out infinite;
+    }
+    .typing i:nth-child(2) { animation-delay: .15s; }
+    .typing i:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes type {
+      50% { transform: translateY(-4px); opacity: .45; }
+    }
+
+    .trust-line {
+      position: relative;
+      z-index: 2;
+      margin-top: -14px;
+      padding-bottom: 24px;
+    }
+
+    .trust-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px 26px;
+      flex-wrap: wrap;
+      color: #848ca5;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .trust-item { display: inline-flex; align-items: center; gap: 8px; }
+    .trust-item svg { width: 17px; height: 17px; color: #9fb7ff; }
+    .separator { width: 3px; height: 3px; border-radius: 50%; background: #4b5268; }
+
+    section.content-section { padding: 64px 0; }
+
+    .section-kicker {
+      margin: 0 0 14px;
+      color: #92afff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2.15rem, 4.5vw, 4.35rem);
+      line-height: 1.05;
+      letter-spacing: -.055em;
+      text-wrap: balance;
+    }
+
+    .section-intro {
+      max-width: 580px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    .benefit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 40px;
+    }
+
+    .benefit-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 305px;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+      transition: transform .3s ease, border-color .3s ease, background .3s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(155,183,255,.34);
+      background: linear-gradient(145deg, rgba(122,168,255,.1), rgba(180,122,255,.045));
+    }
+
+    .benefit-card::before {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -65px;
+      top: -70px;
+      border-radius: 50%;
+      background: var(--card-accent, var(--blue));
+      filter: blur(55px);
+      opacity: .18;
+    }
+
+    .benefit-card:nth-child(2) { --card-accent: var(--violet); }
+    .benefit-card:nth-child(3) { --card-accent: var(--cyan); }
+
+    .icon-wrap {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 48px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 15px;
+      color: #c8d6ff;
+      background: rgba(255,255,255,.06);
+    }
+    .icon-wrap svg { width: 22px; height: 22px; }
+
+    .benefit-card h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+      letter-spacing: -.03em;
+    }
+
+    .benefit-card p {
+      margin: 0;
+      color: #949bb1;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .steps-section {
+      position: relative;
+      background: linear-gradient(180deg, transparent, rgba(69,85,170,.07), transparent);
+    }
+
+    .steps-layout {
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: 90px;
+      align-items: start;
+    }
+
+    .sticky-copy { position: sticky; top: 80px; }
+
+    .steps {
+      position: relative;
+      display: grid;
+      gap: 14px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 20px;
+      padding: 27px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.035);
+    }
+
+    .step-number {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: #dae4ff;
+      background: linear-gradient(145deg, rgba(122,168,255,.22), rgba(179,140,255,.13));
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .step h3 { margin: 2px 0 8px; font-size: 18px; letter-spacing: -.025em; }
+    .step p { margin: 0; color: #949bb1; font-size: 14px; line-height: 1.7; }
+
+    .cta-section { padding: 48px 0 36px; }
+
+    .cta-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 64px 34px;
+      border: 1px solid rgba(176,192,255,.2);
+      border-radius: 34px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 120%, rgba(105,230,242,.2), transparent 34%),
+        radial-gradient(circle at 15% -10%, rgba(122,168,255,.22), transparent 35%),
+        radial-gradient(circle at 92% 8%, rgba(179,140,255,.22), transparent 37%),
+        rgba(255,255,255,.045);
+      box-shadow: var(--shadow);
+    }
+
+    .cta-panel h2 { max-width: 760px; margin-inline: auto; }
+    .cta-panel p { max-width: 560px; margin: 20px auto 31px; color: var(--muted); line-height: 1.75; }
+
+    footer { padding: 0 0 28px; }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: #737b91;
+      font-size: 11px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 940px) {
+      .hero { padding-top: 44px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 62px; }
+      .hero-copy { max-width: 680px; }
+      .experience-card { width: min(100%, 620px); margin-inline: auto; transform: none; }
+      .benefit-grid { grid-template-columns: 1fr; }
+      .benefit-card { min-height: 230px; }
+      .icon-wrap { margin-bottom: 44px; }
+      .steps-layout { grid-template-columns: 1fr; gap: 48px; }
+      .sticky-copy { position: static; }
+    }
+
+    @media (max-width: 620px) {
+      .container { width: min(calc(100% - 28px), var(--container)); }
+      .site-header { padding: 18px 0; }
+      .brand-text { font-size: 13px; }
+      .header-inner .button { display: none; }
+      .hero { min-height: auto; padding: 46px 0 58px; }
+      h1 { font-size: clamp(3.05rem, 15.2vw, 4.5rem); }
+      .hero-copy { margin-top: 22px; font-size: 15px; }
+      .hero-actions { display: grid; margin-top: 28px; }
+      .hero-actions .button { width: 100%; }
+      .microcopy { justify-content: center; }
+      .conversation { min-height: 390px; padding: 22px; }
+      .experience-card { border-radius: 25px; }
+      .window { border-radius: 24px; }
+      .prompt { max-width: 92%; }
+      .insight-panel { margin-left: 0; }
+      .typing { margin-left: 36px; }
+      .trust-line { margin-top: 0; padding-bottom: 20px; }
+      .separator { display: none; }
+      .trust-inner { flex-direction: column; align-items: flex-start; padding-left: 12px; }
+      section.content-section { padding: 48px 0; }
+      h2 { font-size: 2.4rem; }
+      .benefit-grid { margin-top: 28px; }
+      .benefit-card { min-height: 245px; padding: 24px; }
+      .step { grid-template-columns: 1fr; gap: 15px; padding: 24px; }
+      .cta-section { padding: 36px 0 28px; }
+      .cta-panel { padding: 48px 22px; border-radius: 26px; }
+      .cta-panel .button { width: 100%; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    /* InstaDeck light theme — based on the supplied product screenshot. */
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --bg-soft: #f6f7f9;
+      --surface: #f5f6f8;
+      --surface-strong: #eef0f3;
+      --border: #e2e5ea;
+      --text: #202938;
+      --muted: #6f7786;
+      --blue: #ff4526;
+      --violet: #ff694f;
+      --cyan: #ff9b87;
+      --pink: #ff4526;
+      --green: #30a46c;
+      --shadow: 0 28px 70px rgba(33, 41, 56, .12);
+    }
+
+    body {
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(255, 69, 38, .075), transparent 27rem),
+        radial-gradient(circle at 92% 17%, rgba(255, 161, 142, .12), transparent 28rem),
+        #fff;
+    }
+
+    body::before {
+      opacity: .48;
+      background-image:
+        linear-gradient(rgba(32,41,56,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(32,41,56,.025) 1px, transparent 1px);
+      mask-image: linear-gradient(to bottom, black, transparent 66%);
+    }
+
+    .hero { overflow: visible; }
+
+    .brand { color: #ff4526; }
+
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      flex: 0 0 auto;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+      border-radius: 14px;
+      background: transparent;
+      box-shadow: 0 8px 20px rgba(255, 69, 11, .18);
+    }
+
+    .mini-logo {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+      border-radius: 7px;
+      box-shadow: 0 4px 10px rgba(255, 69, 11, .16);
+    }
+
+    .answer .mini-logo { margin-top: 3px; }
+
+    .pro-badge {
+      display: inline-grid;
+      place-items: center;
+      min-width: 42px;
+      min-height: 28px;
+      margin-left: 3px;
+      padding: 0 9px;
+      border-radius: 999px;
+      color: #ff4526;
+      background: #fff0ec;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+
+    .spark {
+      background: #ff4526;
+      box-shadow: 0 0 0 7px #fff0ec;
+    }
+
+    .spark::after { background: #fff; opacity: .78; }
+
+    .button,
+    .button-gradient {
+      color: #fff;
+      border-color: #ff4526;
+      background: #ff4526;
+      box-shadow: 0 12px 28px rgba(255, 69, 38, .22);
+    }
+
+    .button:hover,
+    .button-gradient:hover {
+      color: #fff;
+      background: #e93a1d;
+      box-shadow: 0 16px 36px rgba(255, 69, 38, .28);
+    }
+
+    .button:focus-visible { outline-color: rgba(255, 69, 38, .42); }
+
+    .button-gradient::before {
+      background: #ff4526;
+      filter: blur(16px);
+      opacity: .16;
+    }
+
+    /* The page-level gradients already provide the soft orange glow.
+       Hiding the section-bound orbs prevents a hard clipped edge where
+       the hero ends and the trust row begins. */
+    .hero-orb { display: none; }
+
+    .trust-line { background: transparent; }
+
+    .eyebrow {
+      color: #e63c20;
+      border-color: #ffd4ca;
+      background: #fff3f0;
+    }
+
+    .eyebrow-dot { background: #ff4526; box-shadow: 0 0 0 4px #ffe1da; }
+
+    .gradient-text {
+      color: #ff4526;
+      background: none;
+      background-clip: border-box;
+      -webkit-background-clip: border-box;
+    }
+
+    .hero-copy,
+    .section-intro,
+    .cta-panel p { color: var(--muted); }
+
+    .microcopy { color: #8b93a1; }
+
+    .experience-card {
+      background: #e1e4e9;
+      box-shadow: var(--shadow);
+    }
+
+    .experience-card::before {
+      background: rgba(255, 69, 38, .18);
+      opacity: .45;
+    }
+
+    .window { background: #fff; }
+
+    .window-bar {
+      border-bottom-color: #e5e7eb;
+      background: #fff;
+    }
+
+    .window-title { color: #5f6775; }
+
+    .window-dots i { background: #c9cdd5; }
+
+    .conversation { background: #fafafa; }
+
+    .prompt {
+      color: #242d3c;
+      border-color: #e1e4e9;
+      background: #f0f2f5;
+    }
+
+    .answer-lines span {
+      background: linear-gradient(90deg, #cfd3da, #eceef1);
+    }
+
+    .insight-panel {
+      border-color: #ffd7ce;
+      background: #fff1ed;
+    }
+
+    .insight-panel::after { background: #ff7d63; opacity: .18; }
+    .insight-label { color: #f04425; }
+    .insight-title { color: #303847; }
+    .typing i { background: #aeb4bf; }
+
+    .trust-inner { color: #747c8b; }
+    .trust-item svg { color: #ff4526; }
+    .separator { background: #cdd1d8; }
+
+    .section-kicker { color: #f04425; }
+
+    .benefit-card {
+      border-color: #e1e4e8;
+      background: #f6f7f9;
+    }
+
+    .benefit-card::before { background: #ff6b4d; opacity: .11; }
+
+    .benefit-card:hover {
+      border-color: #ffc2b5;
+      background: #fff8f6;
+      box-shadow: 0 18px 40px rgba(33, 41, 56, .08);
+    }
+
+    .icon-wrap {
+      color: #ff4526;
+      border-color: #ffd7ce;
+      background: #fff0ec;
+    }
+
+    .benefit-card p,
+    .step p { color: #747c8b; }
+
+    .steps-section {
+      background: linear-gradient(180deg, transparent, #f7f8fa 12%, #f7f8fa 88%, transparent);
+    }
+
+    section.steps-section {
+      padding-top: 28px;
+      padding-bottom: 40px;
+    }
+
+    .step {
+      border-color: #e1e4e8;
+      background: #fff;
+      box-shadow: 0 9px 26px rgba(33, 41, 56, .055);
+    }
+
+    .step-number {
+      color: #ff4526;
+      background: #fff0ec;
+    }
+
+    .cta-panel {
+      border-color: #e1e4e8;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,69,38,.11), transparent 30%),
+        radial-gradient(circle at 90% 100%, rgba(255,155,135,.13), transparent 32%),
+        #f6f7f9;
+      box-shadow: 0 24px 64px rgba(33, 41, 56, .11);
+    }
+
+    .clients-section { padding: 12px 0 36px; }
+
+    .clients-panel {
+      padding: 36px;
+      border: 1px solid #e1e4e8;
+      border-radius: 30px;
+      background: #f6f7f9;
+      box-shadow: 0 18px 52px rgba(33, 41, 56, .08);
+    }
+
+    .clients-title {
+      margin: 0 0 22px;
+      color: #ff4526;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .clients-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .client-logo-card {
+      min-width: 0;
+      min-height: 146px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .client-logo {
+      width: 100%;
+      height: 98px;
+      display: block;
+      object-fit: contain;
+      object-position: center;
+      transform-origin: center;
+    }
+
+    .client-logo--ivo { transform: scale(.94); }
+    .client-logo--academy { transform: scale(1.08); }
+    .client-logo--bj { transform: scale(1.02); }
+    .client-logo--behind { transform: scale(1.46); }
+    .client-logo--fitzyu { transform: scale(1.1); }
+    .client-logo--tumbler { transform: scale(1.28); }
+
+    .footer-inner {
+      border-top-color: #e5e7eb;
+      color: #8a92a0;
+    }
+
+    @media (max-width: 620px) {
+      .brand-logo { width: 46px; height: 46px; border-radius: 12px; }
+      section.steps-section { padding-top: 20px; padding-bottom: 28px; }
+      .clients-section { padding: 8px 0 28px; }
+      .clients-panel { padding: 26px 14px; border-radius: 24px; }
+      .clients-title { margin-bottom: 16px; text-align: center; font-size: 11px; }
+      .clients-grid { gap: 8px; }
+      .client-logo-card { min-height: 98px; padding: 8px; border-radius: 13px; }
+      .client-logo { height: 72px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand" aria-label="InstaDeck Pro">
+        <img class="brand-logo" src="assets/instadeck-logo.png" alt="" width="2000" height="2000" />
+        <span class="brand-text">InstaDeck</span>
+        <span class="pro-badge">PRO</span>
+      </div>
+      <a class="button button-small" href="https://gemini.google.com/share/c0ca6ce72be3" target="_blank" rel="noopener noreferrer">
+        Lihat InstaDeck
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-orb one" aria-hidden="true"></div>
+      <div class="hero-orb two" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-content reveal">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Konten siap posting, nyaris tanpa effort</p>
+          <h1>Masukkan topik. <span class="gradient-text">Konten langsung jadi.</span></h1>
+          <p class="hero-copy">Cukup masukkan kata kunci atau tempel URL sebuah artikel. InstaDeck otomatis mengubahnya menjadi carousel atau Story lengkap—mulai dari ide, naskah, visual, hingga caption.</p>
+          <div class="hero-actions">
+            <a class="button button-gradient" href="https://gemini.google.com/share/c0ca6ce72be3" target="_blank" rel="noopener noreferrer">
+              Lihat cara kerja InstaDeck
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <span class="microcopy">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Tanpa desain manual • Tanpa mulai dari nol
+            </span>
+          </div>
+        </div>
+
+        <div class="experience-card reveal" aria-label="Ilustrasi generator konten InstaDeck">
+          <div class="window">
+            <div class="window-bar">
+              <div class="window-title"><img class="mini-logo" src="assets/instadeck-logo.png" alt="" width="2000" height="2000" /> InstaDeck AI Generator</div>
+              <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+            <div class="conversation">
+              <div class="prompt">Topik: tren employee wellbeing untuk tim modern</div>
+              <div class="answer">
+                <img class="mini-logo" src="assets/instadeck-logo.png" alt="" width="2000" height="2000" />
+                <div class="answer-lines" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+              </div>
+              <div class="insight-panel">
+                <div class="insight-label">Konten selesai dibuat</div>
+                <p class="insight-title">Carousel, Story, dan caption siap dipublikasikan.</p>
+              </div>
+              <div class="typing" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust-line">
+      <div class="container trust-inner">
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 4 7v5c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V7l-8-4Z" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Input kata kunci atau URL
+        </span>
+        <span class="separator"></span>
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Carousel & Story otomatis
+        </span>
+        <span class="separator"></span>
+        <span class="trust-item">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Nyaris tanpa effort
+        </span>
+      </div>
+    </div>
+
+    <section class="content-section" aria-labelledby="benefit-title">
+      <div class="container">
+        <p class="section-kicker reveal">Dari input menjadi konten</p>
+        <h2 id="benefit-title" class="reveal">Satu sumber. Semua materi konten siap.</h2>
+        <p class="section-intro reveal">InstaDeck menangani pekerjaan yang biasanya memakan waktu berjam-jam—menggali ide, menyusun alur, mendesain slide, dan menulis caption.</p>
+
+        <div class="benefit-grid">
+          <article class="benefit-card reveal">
+            <div class="icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a7 7 0 0 0-4 12.74V19h8v-3.26A7 7 0 0 0 12 3Z" stroke="currentColor" stroke-width="1.8"/><path d="M9 22h6M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Artikel jadi carousel</h3>
+            <p>Tempel URL artikel dan biarkan AI mengambil insight penting, menyusunnya menjadi alur slide, lalu menyiapkan konten yang mudah dibaca.</p>
+          </article>
+
+          <article class="benefit-card reveal">
+            <div class="icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="12" r="2" fill="currentColor"/></svg>
+            </div>
+            <h3>Story siap tayang</h3>
+            <p>Ubah satu topik menjadi rangkaian Story yang ringkas, visual, dan konsisten—tanpa menyusun setiap layar secara manual.</p>
+          </article>
+
+          <article class="benefit-card reveal">
+            <div class="icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m16.5 7.5 1.5-1.5m0 12-1.5-1.5M7.5 7.5 6 6m0 12 1.5-1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Caption ikut selesai</h3>
+            <p>Hook, ringkasan, call-to-action, dan hashtag dibuat otomatis agar paket konten benar-benar siap dipublikasikan.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section steps-section" aria-labelledby="steps-title">
+      <div class="container steps-layout">
+        <div class="sticky-copy">
+          <p class="section-kicker reveal">Cara kerjanya</p>
+          <h2 id="steps-title" class="reveal">Tiga langkah. Hampir tanpa effort.</h2>
+          <p class="section-intro reveal">Anda membawa ide atau sumbernya. InstaDeck mengurus proses produksi konten dari awal sampai siap posting.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step reveal">
+            <div class="step-number">01</div>
+            <div><h3>Masukkan sumber</h3><p>Ketik kata kunci atau tempel URL artikel yang ingin diubah menjadi konten.</p></div>
+          </article>
+          <article class="step reveal">
+            <div class="step-number">02</div>
+            <div><h3>Pilih format</h3><p>Tentukan apakah Anda membutuhkan carousel, Story, atau keduanya sekaligus.</p></div>
+          </article>
+          <article class="step reveal">
+            <div class="step-number">03</div>
+            <div><h3>Terima konten jadi</h3><p>Dapatkan struktur slide, visual, dan caption yang siap ditinjau lalu dipublikasikan.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-panel reveal">
+          <p class="section-kicker">Waktu Anda untuk hal yang lebih penting</p>
+          <h2>Berhenti membuat setiap slide dari nol.</h2>
+          <p>Biarkan InstaDeck mengubah ide dan artikel menjadi konten sosial yang utuh, konsisten, dan siap digunakan.</p>
+          <a class="button button-gradient" href="https://gemini.google.com/share/c0ca6ce72be3" target="_blank" rel="noopener noreferrer">
+            Lihat InstaDeck sekarang
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="clients-section" aria-labelledby="clients-title">
+      <div class="container">
+        <div class="clients-panel reveal">
+          <h2 class="clients-title" id="clients-title">Our Client:</h2>
+          <div class="clients-grid" aria-label="Daftar klien InstaDeck">
+            <div class="client-logo-card">
+              <img class="client-logo client-logo--ivo" src="assets/clients/ivo.jpg" alt="Indo Voice Over" width="500" height="500" loading="lazy" decoding="async" />
+            </div>
+            <div class="client-logo-card">
+              <img class="client-logo client-logo--academy" src="assets/clients/ivo-academy.png" alt="Indo Voice Over Academy" width="1000" height="1000" loading="lazy" decoding="async" />
+            </div>
+            <div class="client-logo-card">
+              <img class="client-logo client-logo--bj" src="assets/clients/bj.png" alt="Bikin Jingle" width="516" height="414" loading="lazy" decoding="async" />
+            </div>
+            <div class="client-logo-card">
+              <img class="client-logo client-logo--behind" src="assets/clients/behind-the-sun.jpg" alt="Behind The Sun" width="1254" height="1254" loading="lazy" decoding="async" />
+            </div>
+            <div class="client-logo-card">
+              <img class="client-logo client-logo--fitzyu" src="assets/clients/fitzyu.png" alt="Fitzyu" width="1254" height="1254" loading="lazy" decoding="async" />
+            </div>
+            <div class="client-logo-card">
+              <img class="client-logo client-logo--tumbler" src="assets/clients/tumblerguys.png" alt="Tumbler Guys" width="1254" height="1254" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> InstaDeck</span>
+      <span>AI content automation untuk carousel dan Story.</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -36px' });
+
+    document.querySelectorAll('.reveal').forEach((element, index) => {
+      element.style.transitionDelay = `${Math.min(index % 3, 2) * 90}ms`;
+      revealObserver.observe(element);
+    });
+  </script>
+</body>
+</html>
